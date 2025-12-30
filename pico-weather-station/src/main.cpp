@@ -3,28 +3,23 @@
 #include <HTTPClient.h>
 #include "DHT.h"
 
-// ------------------- Sensor Pins -------------------
 #define DHTPIN 7
 #define DHTTYPE DHT22
 DHT dht(DHTPIN, DHTTYPE);
 
-// RB-P-XPLR onboard LED (your pin)
 #define LED_PIN 32
 
-// ------------------- WiFi + Server -------------------
 const char* ssid = "iPhone";
-const char* password = "123412341235";
+const char* password = "Password";
 
 // Your PC IPv4 (confirmed) + backend endpoint
-const char* SERVER_URL = "http://172.20.10.5:3000/api/weather";
+const char* SERVER_URL = "http://IP4V address:3000/api/weather";
 
-// ------------------- Timing -------------------
 const unsigned long SEND_INTERVAL_MS = 5000;
 unsigned long lastSendMs = 0;
 
 WiFiClient wifiClient;
 
-// ------------------- Helpers -------------------
 static void blinkOnce(int onMs = 80, int offMs = 80) {
   digitalWrite(LED_PIN, LOW);  delay(onMs);
   digitalWrite(LED_PIN, HIGH); delay(offMs);
@@ -89,7 +84,6 @@ static bool postReading(float tempC, float humPct, float windSpeed, float noiseL
 
   http.setTimeout(8000);
 
-  // IMPORTANT: begin with WiFiClient
   if (!http.begin(wifiClient, SERVER_URL)) {
     Serial.println("HTTP begin failed");
     http.end();
@@ -132,31 +126,25 @@ void loop() {
     connectWiFi();
   }
 
-  // Rate limit
   if (millis() - lastSendMs < SEND_INTERVAL_MS) {
     delay(10);
     return;
   }
   lastSendMs = millis();
 
-  // Read DHT
-  // float temperature = dht.readTemperature();
-  // float humidity    = dht.readHumidity();
+
   float temperature = 26.5;
   float humidity = 51.2;
 
   if (isnan(temperature) || isnan(humidity)) {
     Serial.println("DHT read failed (NaN). Skipping send.");
-    // Error blink pattern
     blinkError(2);
     return;
   }
 
-  // TODO: Replace with your real sensors later
   float windSpeed  = 0.0;
   float noiseLevel = 0.0;
 
-  // Send
   bool ok = postReading(temperature, humidity, windSpeed, noiseLevel);
 
   if (ok) {
