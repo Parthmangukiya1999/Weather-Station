@@ -9,24 +9,17 @@ const axios = require("axios");
 const PORT = process.env.PORT || 3000;
 const app = express();
 
-// --------------------------------------------------------
-// MIDDLEWARE
-// --------------------------------------------------------
 app.use(cors());
-app.use(express.json()); // JSON body parsing
+app.use(express.json()); 
 
-// Serve dashboard from ../public (relative to /server)
 const publicDir = path.join(__dirname, "..", "public");
 app.use(express.static(publicDir));
 
-// Home page
 app.get("/", (req, res) => {
   res.sendFile(path.join(publicDir, "index.html"));
 });
 
-// --------------------------------------------------------
 // FIREBASE (OPTIONAL)
-// --------------------------------------------------------
 let fbDb = null;
 
 try {
@@ -47,9 +40,6 @@ try {
   );
 }
 
-// --------------------------------------------------------
-// SQLITE (LOCAL STORAGE)
-// --------------------------------------------------------
 const sqlitePath = path.join(__dirname, "weather.db");
 const db = new sqlite3.Database(sqlitePath, (err) => {
   if (err) console.error("SQLite error:", err.message);
@@ -92,9 +82,6 @@ function saveToSQLite(payload) {
   stmt.finalize();
 }
 
-// --------------------------------------------------------
-// ALERT LOGIC — WhatsApp via CallMeBot
-// --------------------------------------------------------
 function buildAlerts(payload) {
   const alerts = [];
   const t = Number(payload.temperature);
@@ -164,9 +151,7 @@ Time: ${new Date(payload.timestamp).toLocaleString()}
   }
 }
 
-// --------------------------------------------------------
-// API — Pico sends data here
-// --------------------------------------------------------
+
 app.post("/api/weather", async (req, res) => {
   try {
     const timestamp = new Date().toISOString();
@@ -191,7 +176,6 @@ app.post("/api/weather", async (req, res) => {
       sendWhatsAppAlert(payload);
     }
 
-    // Return JSON (better for debugging)
     res.status(200).json({ success: true });
   } catch (err) {
     console.error("/api/weather:", err.message);
@@ -199,9 +183,6 @@ app.post("/api/weather", async (req, res) => {
   }
 });
 
-// --------------------------------------------------------
-// API — Return latest reading (for dashboard)
-// --------------------------------------------------------
 app.get("/api/readings/latest", (req, res) => {
   db.get(
     "SELECT * FROM weather_readings ORDER BY id DESC LIMIT 1",
@@ -215,9 +196,6 @@ app.get("/api/readings/latest", (req, res) => {
   );
 });
 
-// --------------------------------------------------------
-// API — Trend data (for charts)
-// --------------------------------------------------------
 app.get("/api/readings", (req, res) => {
   const range = req.query.range || "24h";
 
@@ -237,9 +215,7 @@ app.get("/api/readings", (req, res) => {
   );
 });
 
-// --------------------------------------------------------
-// DEBUG — confirm DB row count quickly
-// --------------------------------------------------------
+
 app.get("/api/debug/count", (req, res) => {
   db.get("SELECT COUNT(*) AS count FROM weather_readings", (err, row) => {
     if (err) return res.status(500).json({ error: err.message });
@@ -247,9 +223,7 @@ app.get("/api/debug/count", (req, res) => {
   });
 });
 
-// --------------------------------------------------------
 // API — Global Weather (OpenWeather)
-// --------------------------------------------------------
 app.get("/api/openweather", async (req, res) => {
   try {
     const { city, country } = req.query;
@@ -270,9 +244,7 @@ app.get("/api/openweather", async (req, res) => {
   }
 });
 
-// --------------------------------------------------------
-// START SERVER
-// --------------------------------------------------------
+
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
   console.log("Serving dashboard from:", publicDir);
