@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Live Weather Dashboard</title>
+
+  <link rel="stylesheet" href="/styles.css" />
+  <script src="https://www.gstatic.com/charts/loader.js"></script>
+</head>
+
+<body>
+  <main class="container">
+    <h1>Live Weather Dashboard</h1>
+
+    <section class="card">
+      <div class="live-grid">
+        <div class="live-item">
+          <div class="live-label">Temperature</div>
+          <div class="live-value"><span id="temp">--</span> <span class="unit">°C</span></div>
+        </div>
+
+        <div class="live-item">
+          <div class="live-label">Humidity</div>
+          <div class="live-value"><span id="hum">--</span> <span class="unit">%</span></div>
+        </div>
+
+        <div class="live-item">
+          <div class="live-label">Wind Speed</div>
+          <div class="live-value"><span id="wind">--</span> <span class="unit">km/h</span></div>
+        </div>
+
+        <div class="live-item">
+          <div class="live-label">Noise Level</div>
+          <div class="live-value"><span id="noise">--</span> <span class="unit">dB</span></div>
+        </div>
+      </div>
+
+      <div class="subtle" id="lastUpdated">Last updated: --</div>
+    </section>
+
+    <section class="card">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <div class="toolbar-title">Last 24 hours</div>
+          <div class="toolbar-subtitle">Source: Local SQLite via /api/readings</div>
+        </div>
+        <div class="toolbar-right">
+          <button id="refreshBtn" type="button" class="btn">Refresh</button>
+        </div>
+      </div>
+
+      <div id="chartTemp" class="chart"></div>
+      <div id="chartHum" class="chart" style="margin-top:18px;"></div>
+      <div id="chartWindNoise" class="chart" style="margin-top:18px;"></div>
+      <div id="chartSummary" class="chart" style="margin-top:18px;"></div>
+
+      <div id="chartStatus" class="subtle" style="margin-top:10px;"></div>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>
