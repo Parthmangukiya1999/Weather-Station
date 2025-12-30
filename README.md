@@ -1,4 +1,4 @@
-## IoT Weather Station Project
+### IoT Weather Station Project
 
 A full‑stack **IoT Weather Station** that collects environmental data using microcontrollers and sensors, transmits it over Wi‑Fi, stores it in a backend database, and visualizes it on a web dashboard.
 
@@ -32,7 +32,7 @@ This project is designed as an **academic + portfolio‑ready system**, demonstr
 
 ---
 
-## 🔌 Hardware Components
+##  Hardware Components
 
 * **Microcontroller**: Raspberry Pi Pico W / ESP32
 * **Temperature & Humidity**: DHT22 / DHT11
@@ -69,7 +69,7 @@ This project is designed as an **academic + portfolio‑ready system**, demonstr
 
 ---
 
-## 📁 Project Folder Structure
+##  Project Folder Structure
 
 ```
 pico-weather-station/
@@ -97,7 +97,7 @@ pico-weather-station/
 
 ---
 
-## 🌐 API Endpoints
+## API Endpoints
 
 ### POST – Send Weather Data
 
@@ -155,7 +155,7 @@ CREATE TABLE weather_readings (
 
 ---
 
-## ⚙️ Setup Instructions
+## Setup Instructions
 
 ### 1️ Clone Repository
 
