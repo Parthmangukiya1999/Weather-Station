@@ -112,7 +112,7 @@ POST /api/weather
   "temperature": 24.5,
   "humidity": 60,
   "wind": 3.2,
-  "light": 180
+  "Noice": 40
 }
 ```
 
