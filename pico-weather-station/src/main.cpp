@@ -2,6 +2,7 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include "DHT.h"
+#include <TFT_eSPI.h>
 
 #define DHTPIN 7
 #define DHTTYPE DHT22
@@ -12,8 +13,7 @@ DHT dht(DHTPIN, DHTTYPE);
 const char* ssid = "iPhone";
 const char* password = "Password";
 
-// Your PC IPv4 (confirmed) + backend endpoint
-const char* SERVER_URL = "http://IP4V address:3000/api/weather";
+const char* SERVER_URL = "http://IP4V address 3000/api/weather";
 
 const unsigned long SEND_INTERVAL_MS = 5000;
 unsigned long lastSendMs = 0;
@@ -32,33 +32,27 @@ static void blinkError(int times = 2) {
 static void connectWiFi() {
   if (WiFi.status() == WL_CONNECTED) return;
 
-  Serial.print("Connecting to WiFi: ");
-  Serial.println(ssid);
-
-  WiFi.mode(WIFI_STA);
+  Serial.println("Connecting to Wi-Fi...");
   WiFi.begin(ssid, password);
-
-  unsigned long start = millis();
+  int retries = 0;
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
+    retries++;
 
-    if (millis() - start > 20000) { // 20s timeout
-      Serial.println("\nWiFi connect timeout. Retrying...");
-      WiFi.disconnect();
-      delay(1000);
-      WiFi.begin(ssid, password);
-      start = millis();
-    }
+    if (retries % 60 == 0) Serial.println("Still connecting...");
   }
-
-  Serial.println("\nWiFi connected");
-  Serial.print("Pico IP: ");
+  Serial.println("\nWi-Fi connected!");
+  Serial.print("IP Address: ");
   Serial.println(WiFi.localIP());
-  Serial.print("Gateway: ");
-  Serial.println(WiFi.gatewayIP());
-  Serial.print("RSSI: ");
-  Serial.println(WiFi.RSSI());
+
+  randomSeed(analogRead(0));
+}
+
+void beepBuzzer(int duration) {
+  digitalWrite(BUZZER_PIN, HIGH);
+  delay(duration);
+  digitalWrite(BUZZER_PIN, LOW);
 }
 
 static bool postReading(float tempC, float humPct, float windSpeed, float noiseLevel) {
@@ -69,7 +63,6 @@ static bool postReading(float tempC, float humPct, float windSpeed, float noiseL
 
   HTTPClient http;
 
-  // Build JSON payload
   String body = "{";
   body += "\"temperature\":" + String(tempC, 2) + ",";
   body += "\"humidity\":" + String(humPct, 2) + ",";
@@ -102,7 +95,7 @@ static bool postReading(float tempC, float humPct, float windSpeed, float noiseL
 
   http.end();
 
-  // Success when 2xx
+  
   return (code >= 200 && code < 300);
 }
 
@@ -120,7 +113,6 @@ void setup() {
 }
 
 void loop() {
-  // Keep WiFi alive
   if (WiFi.status() != WL_CONNECTED) {
     Serial.println("WiFi disconnected. Reconnecting...");
     connectWiFi();
@@ -131,7 +123,6 @@ void loop() {
     return;
   }
   lastSendMs = millis();
-
 
   float temperature = 26.5;
   float humidity = 51.2;
@@ -151,7 +142,8 @@ void loop() {
     Serial.println("Sent successfully");
     blinkOnce(80, 80);
   } else {
-    Serial.println(" Send failed");
-    blinkError(3);
+    Serial.println("Wi-Fi disconnected, cannot send data.");
   }
+
+  delay(5000); 
 }
